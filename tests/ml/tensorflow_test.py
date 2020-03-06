@@ -172,18 +172,18 @@ def test_keras_binary_classification():
 
     def _make_keras_model():
         model = tf.keras.Sequential([
-            tf.keras.layers.Dense(16, activation='relu'),
+            tf.keras.layers.Dense(32, activation='relu'),
             tf.keras.layers.Dense(1, activation='sigmoid')
         ])
 
-        model.compile(optimizer=tf.keras.optimizers.SGD(),
+        model.compile(optimizer=tf.keras.optimizers.RMSprop(),
                       loss=tf.keras.losses.binary_crossentropy,
                       metrics=['accuracy'])
 
         return model
 
     model = _make_keras_model()
-    model.fit(train_gen, epochs=100, steps_per_epoch=8, verbose=0, validation_data=val_gen, validation_steps=1)
+    model.fit(train_gen, epochs=300, steps_per_epoch=8, verbose=0, validation_data=val_gen, validation_steps=1)
     pred = model.predict(test_gen, steps=1)
     assert pred.shape == (100, 1)  # Returns probabilities
     acc = accuracy_score(df_test.target.values, pred.round().flatten())
@@ -195,7 +195,7 @@ def test_keras_binary_classification_tf_dataset_input(as_dict):
     df_train, df_val, df_test, features, target = make_binary_classification_data()
 
     train_ds = df_train.ml.tensorflow.to_dataset(features=features, target=target, chunk_size=100, parallel=True, as_dict=as_dict)
-    train_ds = train_ds.repeat(10)
+    train_ds = train_ds.repeat(30)
     val_ds = df_val.ml.tensorflow.to_dataset(features=features, target=target, chunk_size=100, parallel=False, as_dict=as_dict)
     test_ds = df_test.ml.tensorflow.to_dataset(features=features, target=target, chunk_size=100, parallel=True, as_dict=as_dict)
 
@@ -215,7 +215,7 @@ def test_keras_binary_classification_tf_dataset_input(as_dict):
                 tf.keras.layers.Dense(32, activation='relu'),
                 tf.keras.layers.Dense(1, activation='sigmoid')
             ])
-        model.compile(optimizer='SGD',
+        model.compile(optimizer=tf.keras.optimizers.RMSprop(),
                       loss='binary_crossentropy',
                       metrics=['accuracy'])
         return model
