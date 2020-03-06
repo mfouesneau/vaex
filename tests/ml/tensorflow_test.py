@@ -310,13 +310,13 @@ def test_keras_multiclass_classification_tf_dataset_input(as_dict):
                 tf.keras.layers.Dense(16, activation='relu'),
                 tf.keras.layers.Dense(4, activation='softmax'),
             ])
-        model.compile(optimizer='SGD',
+        model.compile(optimizer=tf.keras.optimizers.RMSprop(),
                       loss='binary_crossentropy',
                       metrics=['accuracy'])
         return model
 
     model = _make_keras_model(as_dict=as_dict)
-    model.fit(train_ds, epochs=30, verbose=0, validation_data=val_ds, validation_steps=1)
+    model.fit(train_ds, epochs=300, verbose=0, validation_data=val_ds, validation_steps=1)
     pred = model.predict(test_ds, steps=1)
     assert pred.shape == (100, 4)  # Returns probabilities
     acc = accuracy_score(df_test.target.values, pred.argmax(axis=1))
