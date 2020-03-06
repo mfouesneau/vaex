@@ -322,11 +322,11 @@ def test_tf_estimator_regression_booster_trees():
     for feat in features:
         feature_colums.append(tf.feature_column.numeric_column(feat))
 
-    train_fn = df_train.ml.tensorflow.make_input_function(features=features, target=target, repeat=100, shuffle=True)
+    train_fn = df_train.ml.tensorflow.make_input_function(features=features, target=target, repeat=30, shuffle=True)
     val_fn = df_val.ml.tensorflow.make_input_function(features=features, target=target)
     test_fn = df_test.ml.tensorflow.make_input_function(features=features)
 
-    est = tf.estimator.BoostedTreesRegressor(feature_columns=feature_colums, n_batches_per_layer=5)
+    est = tf.estimator.BoostedTreesRegressor(feature_columns=feature_colums, n_batches_per_layer=1, learning_rate=0.5)
     est.train(train_fn)
     val_result = est.evaluate(val_fn)
     assert list(val_result.keys()) == ['average_loss', 'label/mean', 'loss', 'prediction/mean', 'global_step']
