@@ -228,14 +228,14 @@ def test_keras_binary_classification_tf_dataset_input(as_dict):
     assert acc > 0.8
 
 
-def test_tf_estimator_binary_classification_deep_neural_network():
+def test_tf_estimator_multiclass_classification_deep_neural_network():
     df_train, df_val, df_test, features, target, targets = make_multiclass_classification_data()
 
     feature_colums = []
     for feat in features:
         feature_colums.append(tf.feature_column.numeric_column(feat))
 
-    train_fn = df_train.ml.tensorflow.make_input_function(features=features, target=target, repeat=300, shuffle=True)
+    train_fn = df_train.ml.tensorflow.make_input_function(features=features, target=target, repeat=500, shuffle=True)
     val_fn = df_val.ml.tensorflow.make_input_function(features=features, target=target)
     test_fn = df_test.ml.tensorflow.make_input_function(features=features)
 
@@ -249,7 +249,7 @@ def test_tf_estimator_binary_classification_deep_neural_network():
     assert pred_result['class_ids'].shape == (100, 1)
     assert pred_result['probabilities'].shape == (100, 4)
     acc = accuracy_score(df_test.target.values, pred_result['class_ids'].flatten())
-    assert acc > 0.8
+    assert acc > 0.75
 
 
 def test_keras_multiclass_classification():
@@ -316,11 +316,11 @@ def test_keras_multiclass_classification_tf_dataset_input(as_dict):
         return model
 
     model = _make_keras_model(as_dict=as_dict)
-    model.fit(train_ds, epochs=300, verbose=0, validation_data=val_ds, validation_steps=1)
+    model.fit(train_ds, epochs=30, verbose=0, validation_data=val_ds, validation_steps=1)
     pred = model.predict(test_ds, steps=1)
     assert pred.shape == (100, 4)  # Returns probabilities
     acc = accuracy_score(df_test.target.values, pred.argmax(axis=1))
-    assert acc > 0.8
+    assert acc > 0.75
 
 
 def test_tf_estimator_regression_booster_trees():
